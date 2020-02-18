@@ -6,7 +6,6 @@ from sklearn.metrics import mean_absolute_error
 def error_function(x, y, w):
     """
     MSE
-    :return:
     """
     return (y - np.dot(x, w)).T.dot(y - np.dot(x, w))
 
@@ -45,6 +44,9 @@ class LinearRegression:
         return self.weights
 
     def predict(self, x_test):
+        """
+        Прогноз обученной модели
+        """
         return x_test.dot(self.weights)
 
 
