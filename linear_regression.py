@@ -11,28 +11,41 @@ def error_function(x, y, w):
     return (y - np.dot(x, w)).T.dot(y - np.dot(x, w))
 
 
-def stochastic_gd(x, y, lr=0.001):
-    # случайные веса
-    w = np.random.randint(0, 10**3, x.shape[1])
-    w = np.array(w.copy(), dtype=np.float32)
+class LinearRegression:
+    def __init__(self):
+        self.weights = None
+        # self.x = None
+        # self.y = None
 
-    # большая ошибка для старта обучения
-    previous_error = 10**12
-    w.reshape((len(w), 1))
-    current_error = error_function(X, Y, w)
+    def fit(self, x_train, y_train, lr=0.001):
+        """
+        Обучает линейную регрессию стохастическим градиентным спуском
+        """
+        # случайные веса
+        self.weights = np.random.randint(0, 10**3, x_train.shape[1])
+        self.weights = np.array(self.weights.copy(), dtype=np.float32)
 
-    while np.abs(previous_error - current_error) > 0.001:
-        previous_error = current_error
-        i = np.random.randint(0, len(Y))
-        derivatives = [0] * len(w)
-        for j in range(len(w)):
-            derivatives[j] += (Y[i] - np.dot(X[i], w)) * X[i][j]
+        # большая ошибка для старта обучения
+        previous_error = 10**12
+        self.weights.reshape((len(self.weights), 1))
+        current_error = error_function(x_train, y_train, self.weights)
 
-        # обновляем веса
-        for j in range(len(w)):
-            w[j] += 0.01 * derivatives[j]
-        current_error = error_function(X, Y, w)
-    return w
+        while np.abs(previous_error - current_error) > 0.001:
+            previous_error = current_error
+            i = np.random.randint(0, len(y_train))
+            derivatives = [0] * len(self.weights)
+            for j in range(len(self.weights)):
+                derivatives[j] += (y_train[i] - np.dot(x_train[i], self.weights)) * x_train[i][j]
+
+            # обновляем веса
+            for j in range(len(self.weights)):
+                self.weights[j] += lr * derivatives[j]
+            current_error = error_function(x_train, y_train, self.weights)
+
+        return self.weights
+
+    def predict(self, x_test):
+        return x_test.dot(self.weights)
 
 
 if __name__ == '__main__':
@@ -44,7 +57,8 @@ if __name__ == '__main__':
     X[:, 0] = 1
     X[:, 1:] = x
     X = np.array(X.copy(), dtype=np.float32)
-    w = stochastic_gd(X, Y, lr=0.001)
-    predictions = X.dot(w)
+    lr = LinearRegression()
+    lr.fit(X, Y)
+    predictions = lr.predict(X)
     error = mean_absolute_error(Y, predictions)
     print('MAE: ', error)
