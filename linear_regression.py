@@ -4,10 +4,8 @@ from sklearn.metrics import mean_absolute_error
 
 
 def error_function(x, y, w):
-    """
-    MSE
-    """
-    return (y - np.dot(x, w)).T.dot(y - np.dot(x, w))
+    l=len(y)
+    return (1/l)*(y - np.dot(x, w)).T.dot(y - np.dot(x, w))
 
 
 class LinearRegression:
@@ -25,7 +23,7 @@ class LinearRegression:
         self.weights = np.array(self.weights.copy(), dtype=np.float32)
 
         # большая ошибка для старта обучения
-        previous_error = 10**12
+        previous_error = 10**6
         self.weights.reshape((len(self.weights), 1))
         current_error = error_function(x_train, y_train, self.weights)
 
@@ -34,11 +32,11 @@ class LinearRegression:
             i = np.random.randint(0, len(y_train))
             derivatives = [0] * len(self.weights)
             for j in range(len(self.weights)):
-                derivatives[j] += (y_train[i] - np.dot(x_train[i], self.weights)) * x_train[i][j]
+                derivatives[j] = (np.dot(x_train[i], self.weights) - y_train[i] ) * x_train[i][j]
 
             # обновляем веса
             for j in range(len(self.weights)):
-                self.weights[j] += lr * derivatives[j]
+                self.weights[j] -= lr * derivatives[j]
             current_error = error_function(x_train, y_train, self.weights)
 
         return self.weights
@@ -51,7 +49,7 @@ class LinearRegression:
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('../data/bikes.csv')
+    df = pd.read_csv('data/bikes.csv')
     x = df.drop(['dt', 'casual', 'other', 'total'], axis=1).values
     Y = df['total']
     X = np.empty((x.shape[0], x.shape[1]+1))
