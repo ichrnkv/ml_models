@@ -153,5 +153,4 @@ if __name__ == '__main__':
     tree = fit_tree(training_data)
 
     for row in training_data:
-        print("Actual: %s. Predicted: %s" %
-              (row[-1], predict(row, tree)))
+        print("Actual: {}. Predicted: {}".format(row[-1], predict(row, tree)))
