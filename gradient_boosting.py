@@ -75,7 +75,7 @@ class GradientBoosting(BaseEstimator):
 
     def predict_proba(self, X):
         """
-        Возвращает вероятность класса 1
+        Возвращает вероятность метки 1
         """
 
         pred = np.mean(y) * np.ones([y.shape[0], ])
