@@ -6,7 +6,6 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
 
 # наследуемся от класса BaseEstimator
-# TODO добавить др ф-и потерь
 
 class GradientBoosting(BaseEstimator):
     def sigmoid(self, z):
@@ -19,7 +18,7 @@ class GradientBoosting(BaseEstimator):
 
     def log_loss_grad(self, y, p):
         """
-        Градиент логлосса
+        Градиент логлосса по прогнозам
         """
         y = y.T
         p = p.T
@@ -48,11 +47,13 @@ class GradientBoosting(BaseEstimator):
         """
         self.X = X
         self.y = y
-
+        
+        # инициализируем ответы средним значением таргета
         b = self.initialization(y)
         prediction = b.copy()
 
         for t in range(self.n_estimators):
+            # определяем остатки
             resid = -self.objective_grad(y, prediction)
 
             # обучаем дерево на остатках
@@ -77,7 +78,8 @@ class GradientBoosting(BaseEstimator):
         """
         Возвращает вероятность метки 1
         """
-
+        
+        # инициализируем ответы средним значением таргета
         pred = np.mean(y) * np.ones([y.shape[0], ])
 
         for t in range(self.n_estimators):
