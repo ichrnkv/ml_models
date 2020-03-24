@@ -17,6 +17,9 @@ def get_cat_columns(df):
 
 
 class Blending(BaseEstimator, ClassifierMixin):
+    """
+    Simple blending of 2 models
+    """
     def __init__(self, models, alpha=1):
         self.models = models
         self.alpha = alpha
