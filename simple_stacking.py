@@ -8,8 +8,6 @@ from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import warnings
-
-# disable warnings
 warnings.filterwarnings('ignore')
 
 
@@ -38,9 +36,10 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
     Stacking of multiple models through meta_algoritm.
     Uses KFold validation.
     """
-    def __init__(self, basic_models, meta_algorithm, n_folds, random_state):
+    def __init__(self, basic_models, meta_algorithm, use_base_features=False, n_folds=3, random_state=13):
         self.basic_models = basic_models
         self.meta_algorithm = meta_algorithm
+        self.use_base_features = use_base_features
         self.n_folds = n_folds
         self.random_state = random_state
 
@@ -53,8 +52,10 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
                 meta_preds = model.predict_proba(X.loc[valid_index])[:, 1]
                 meta_features[valid_index, idx] = meta_preds
 
-        print('Stacking is done!')
-        self.meta_algorithm.fit(meta_features, y)
+        if self.use_base_features:
+            self.meta_algorithm.fit(np.hstack((X, meta_features)), y)
+        else:
+            self.meta_algorithm.fit(meta_features, y)
         return self
 
     def predict_proba(self, X):
@@ -63,7 +64,10 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
                 model.predict_proba(X)[:, 1] for model in self.basic_models
             ]
         )
-        return self.meta_algorithm.predict_proba(meta_features)
+        if self.use_base_features:
+            return self.meta_algorithm.predict_proba(np.hstack((X, meta_features)))
+        else:
+            return self.meta_algorithm.predict_proba(meta_features)
 
     def predict(self, X):
         meta_features = np.column_stack(
@@ -71,7 +75,10 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
                 model.predict_proba(X)[:, 1] for model in self.basic_models
             ]
         )
-        return self.meta_algorithm.predict(meta_features)
+        if self.use_base_features:
+            return self.meta_algorithm.predict(np.hstack((X, meta_features)))
+        else:
+            return self.meta_algorithm.predict(meta_features)
 
 
 if __name__ == '__main__':
@@ -102,7 +109,8 @@ if __name__ == '__main__':
     ]
 
     stacking = StackingClassifier(basic_models=models,
-                                  meta_algorithm=LogisticRegression(),
+                                  meta_algorithm=LGBMClassifier(n_jobs=-1, random_state=rs),
+                                  use_base_features=True,
                                   n_folds=3,
                                   random_state=rs)
 
