@@ -49,7 +49,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
                 meta_preds = model.predict_proba(X.loc[valid_index])[:, 1]
                 meta_features[valid_index, idx] = meta_preds
 
-        print('Blending is done!')
+        print('Stacking is done!')
         self.meta_algorithm.fit(meta_features, y)
         return self
 
