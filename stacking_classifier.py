@@ -33,7 +33,7 @@ def train_test_split(X, y, test_size):
 
 class StackingClassifier(BaseEstimator, ClassifierMixin):
     """
-    Stacking of multiple models through meta_algoritm.
+    Stacking of multiple classification models through meta_algoritm.
     Uses KFold validation.
     """
     def __init__(self, basic_models, meta_algorithm, use_base_features=False, n_folds=3, random_state=13):
