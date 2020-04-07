@@ -82,6 +82,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
 
 
 if __name__ == '__main__':
+    
     # read data
     data = pd.read_csv('../data/data.adult.csv')
     data.rename(columns={'>50K,<=50K': 'target'}, inplace=True)
