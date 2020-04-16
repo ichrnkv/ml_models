@@ -6,7 +6,6 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
 
 # наследуемся от класса BaseEstimator
-
 class GradientBoosting(BaseEstimator):
     def sigmoid(self, z):
         """
